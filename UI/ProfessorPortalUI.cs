@@ -2,6 +2,8 @@
 using LMS.DAL;
 using LMS.ML;
 using System;
+using System.Collections.Generic;
+using System.Xml.Schema;
 
 namespace LMS.UI
 {
@@ -61,6 +63,8 @@ namespace LMS.UI
                 Console.WriteLine("7. View Class Performance");
                 Console.WriteLine("8. Delete Student Record");
                 Console.WriteLine("9. Read Students Feedback");
+                Console.WriteLine("10. Paginated View");
+                Console.WriteLine("11. QUICK FILTER");
                 Console.WriteLine("0. Logout");
                 Console.Write("Choice: ");
 
@@ -82,6 +86,8 @@ namespace LMS.UI
                     case 7: ViewPerformance(); break;
                     case 8: DeleteStudent(); break;
                     case 9: ReadFeedback(); break;
+                    case 10: pView(); break;
+                    case 11: qFilter(); break;
                     case 0: Console.WriteLine("Logging out..."); break;
                     default: Console.WriteLine("Invalid choice!"); Console.ReadKey(); break;
                 }
@@ -220,6 +226,147 @@ namespace LMS.UI
                 Console.WriteLine(f);
             }
             Console.ReadKey();
+        }
+        private void pView()
+        {
+            Console.WriteLine("HOW MANY RECORDS WANT ON A PAGE?:");
+            int numberOfRecords = int.Parse(Console.ReadLine());
+            char PageLoacation = 'Z';
+            List<Student> stu = studentBL.GetAllStudents();
+            int currentPageNumber = 0;
+            while (PageLoacation != 'X')
+            {
+                Console.WriteLine("N for Next , P for previous , L for last , F for First , X for exit: ");
+                PageLoacation = char.Parse(Console.ReadLine());
+                if (PageLoacation == 'F')
+                {
+                    int i = 0;
+                    foreach (Student s in stu)
+                    {
+                        Console.WriteLine($"ID: {s.Id}, NAME: {s.Name}");
+                        currentPageNumber++;
+                        i++;
+                        if (i >= numberOfRecords) return;
+                        Console.ReadKey();
+                    }
+                }
+                else if (PageLoacation == 'L')
+                {
+                    int i = 0;
+                    int LastStu = stu.Count - numberOfRecords;
+                    foreach (Student s in stu)
+                    {
+                        i++;
+                        if (i >= LastStu && i < stu.Count)
+                        {
+                            Console.WriteLine($"ID: {s.Id}, NAME: {s.Name}");
+                            Console.ReadKey();
+                        }
+                    }
+                }
+                else if (PageLoacation == 'N')
+                {
+                    if (currentPageNumber >= stu.count)
+                    {
+                        Console.WriteLine("ALREADY ON LAST PAGE");
+                    }
+                    int i = 0;
+                    foreach (Student s in stu)
+                    {
+                        i++;
+                        int towhen = currentPageNumber + numberOfRecords;
+                        if (i >= currentPageNumber && i < towhen)
+                        {
+                            currentPageNumber++;
+                            Console.WriteLine($"ID: {s.Id}, NAME: {s.Name}");
+                            Console.ReadKey();
+                        }
+                    }
+                }
+                else if (PageLoacation == 'P')
+                {
+                    if (currentPageNumber <= 0)
+                    {
+                        Console.WriteLine("ALREADY ON 1st PAGE");
+                    }
+                    int i = 0;
+                    foreach (Student s in stu)
+                    {
+                        i++;
+                        int towhen = currentPageNumber - numberOfRecords;
+                        if (i <= currentPageNumber && i > towhen)
+                        {
+                            currentPageNumber--;
+                            Console.WriteLine($"ID: {s.Id}, NAME: {s.Name}");
+                            Console.ReadKey();
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("INVALID CHOICE !!");
+                }
+            }
+        }
+        private void qFilter()
+        {
+            // have to write in BL after 
+            Console.WriteLine("ENTER THE GPA between 1 AND 4 for filtering: ");
+            float GPA = float.Parse(Console.ReadLine());
+            Console.WriteLine("ENTER SUB 1 NAme for filtering :");
+            string SUB1Name = Console.ReadLine();
+            Console.WriteLine("ABOVE OR BELOW");
+            string action = Console.ReadLine();
+            List<Student> stuu = studentBL.GetAllStudents();
+            List<Student> filterStu = new List<Student>();
+            if (action == "ABOVE")
+            {
+                foreach (Student s in stuu)
+                {
+                    if (s.Gpa >= GPA && s.Subject1 == SUB1Name)
+                    {
+                        filterStu.Add(s);
+                    }
+                }
+            }
+            else if (action == "BELOW")
+            {
+                foreach (Student s in stuu)
+                {
+                    if (s.Gpa <= GPA && s.Subject1 == SUB1Name)
+                    {
+                        filterStu.Add(s);
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("INAVLID INPUT!!");
+
+            }
+            int max = 0, min = 0;
+            if (filterStu == null)
+            {
+                Console.WriteLine("NO RECORED FOUND !!");
+                return;
+            }
+            else
+            {
+                foreach (Student s in filterStu)
+                {
+                    Console.WriteLine($"ID: {s.Id}, NAME: {s.Name} , GPA : {s.Gpa} , SUB 1 : {s.Subject1}");
+                    if (max < s.Gpa)
+                    {
+                        max = s.Gpa;
+                    }
+                    if (min > s.Gpa)
+                    {
+                        min = s.Gpa;
+                    }
+                    Console.ReadKey();
+                }
+                Console.WriteLine($"total filtered data is : {filterStu.Count} , highest is : {max} , MIN IS : {min}")
+            }
         }
     }
 }

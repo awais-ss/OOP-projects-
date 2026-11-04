@@ -33,6 +33,15 @@ namespace LMS
                     StudentPortalUI stud = new StudentPortalUI();
                     stud.Login();
                 }
+                else if (choice == 0)
+                {
+                    Console.WriteLine("Thank you for using LMS. Goodbye!");
+                }
+
+                else
+                {
+                    Console.WriteLine("Invalid choice! Please select 0, 1 or 2.");
+                }
             }
         }
     }

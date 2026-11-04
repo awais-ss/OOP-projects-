@@ -45,6 +45,19 @@ namespace LMS.BL
 
 
 
+        //   SEARCH STUDENT BY NAME
+        public Student SearchByName(string name)
+        {
+            foreach (Student s in students)
+            {
+                if (s.Name == name)
+                {
+                    return s;
+                }
+            }
+            return null;
+        }
+
         public bool UpdateMarks(string name, int marks1, int marks2, int marks3)
         {
             Student s = SearchByName(name);
@@ -60,22 +73,10 @@ namespace LMS.BL
 
         //SORT BY GPA 
         public void SortByGpa()
-        {
+        { 
             students.Sort((a, b) => b.Gpa.CompareTo(a.Gpa));
         }
 
-        //   SEARCH STUDENT BY NAME
-        public Student SearchByName(string name)
-        {
-            foreach (Student s in students)
-            {
-                if (s.Name == name)
-                {
-                    return s;
-                }
-            }
-            return null;
-        }
 
         //  DELETE STUDENT
         public bool DeleteStudent(string name)
